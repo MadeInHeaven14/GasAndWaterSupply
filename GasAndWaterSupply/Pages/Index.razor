@@ -1,0 +1,72 @@
+﻿@page "/"
+@inject GasAndWaterSupply.Data.UserService service
+@inject NavigationManager nav
+<PageTitle>Index</PageTitle>
+<div class="asd">
+    <div class="row">
+        <h1>Hello, Guest!</h1>
+        <h4>@Message</h4>
+        <MudTextField T="string" Label="Login" @bind-Value="Login" />
+        <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+        <div class="buttons">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="(x => FindUser())">Sign In</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="(x => GoToReg())">Sign Up</MudButton>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string Message;
+    private bool isExist;
+    private bool isCorrectPassword;
+    private string Login = string.Empty;
+    private string Password = string.Empty;
+    bool isShow;
+    public IMask emailMask = RegexMask.Email();
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType PasswordInput = InputType.Password;
+    private void GoToReg()
+    {
+        nav.NavigateTo("/reg");
+    }
+    private void FindUser()
+    {
+        isExist = service.Find(Login, Password, isExist);
+        isCorrectPassword = service.FindPassword(Login, Password, isCorrectPassword);
+        if (isExist == true)
+        {
+            if (isCorrectPassword == true)
+            {
+                Message = $"Добро пожаловать, {Login}!";
+                service.SignIn(Login);
+                nav.NavigateTo("/PerAr");
+            }
+            else
+            {
+                Message = "Неправильный пароль!";
+            }
+        }
+        else
+        {
+            Message = "Пользователь не найден!";
+        }
+    }
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}
+
+    
+

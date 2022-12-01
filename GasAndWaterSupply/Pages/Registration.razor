@@ -1,0 +1,175 @@
+﻿@using GasAndWaterSupply.Data
+@inject GasAndWaterSupply.Data.UserService service
+@inject NavigationManager nav
+@page "/reg"
+<div class="asd">
+    <div class="row">
+        <h3 class="registration">Registration</h3>
+        <h4 class="alert-danger">@Message</h4>
+        @*<div>
+            <label>Login :</label>
+        </div>
+        <div class="colo-md-8">
+            <input @bind-value="Login" />
+        </div>*@
+        <MudTextField T="string" Label="Login" @bind-Value="Login" />
+        <MudSelect T="string" Label="Role" AnchorOrigin="Origin.BottomCenter" @bind-Value="Role">
+            <MudSelectItem Value="@("Заказчик")" />
+            <MudSelectItem Value="@("Застройщик")" />
+            <MudSelectItem Value="@("Проектировщик")" />
+        </MudSelect>
+        @*<div>
+            <div class="colo-md-4">
+                <label>Role :</label>
+            </div>
+            <div class="colo-md-8">
+                <select @bind="Role">
+                    <option>Заказчик</option>
+                    <option>Застройщик</option>
+                    <option>Проектировщик</option>
+                </select>
+            </div>
+        </div>*@
+        <MudTextField T="string" Label="FullName" @bind-Value="FullName" />
+        @*<div>
+            <label>FullName :</label>
+        </div>
+        <div class="colo-md-8">
+            <input @bind-value="FullName"/>
+        </div>*@
+        <MudSelect T="string" Label="Department" AnchorOrigin="Origin.BottomCenter" @bind-Value="Department">
+            <MudSelectItem Value="@("Газо-Снабжение")" />
+            <MudSelectItem Value="@("Водо-Снабжение")" />
+        </MudSelect>
+        @*<div>
+            <div class="colo-md-4">
+                <label>Department :</label>
+            </div>
+            <div class="colo-md-8">
+                <select @bind="Department">
+                    <option>Газо-Снабжение</option>
+                    <option>Водо-Снабжение</option>
+                </select>
+            </div>
+        </div>*@
+        <MudTextField Mask="@emailMask" Label="Email Address" HelperText="@emailMask.Mask"
+                      @bind-Value="Email" Variant="@Variant.Text" Clearable />
+        @*<div>
+            <label>Email :</label>
+        </div>
+        <div class="colo-md-8">
+            <input type="email" @bind-value="Email" />
+        </div>*@
+        <div class="colo-md-8">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Mask="@(new PatternMask("00000000000"))"
+                                  @bind-Value="Phone" Label="Phone" Variant="@Variant.Text" Clearable />
+                </MudItem>
+            </MudGrid>
+            @*<SfMaskedTextBox Mask="0000"></SfMaskedTextBox>*@
+            @*<input type="tel" @bind-value="Phone"/>*@
+        </div>
+        <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+        <MudTextField @bind-Value="ConfirmPassword" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" />
+        @*<div>
+            <div class="colo-md-4">
+                <label>Password :</label>
+            </div>
+            <div class="colo-md-8">
+                <input type="password" @bind-value="Password"/>
+            </div>
+        </div>*@
+        @*<div>
+            <label>Confirm password :</label>
+        </div>
+        <div class="colo-md-8">
+            <input type="password" @bind-value="ConfirmPassword"/>
+        </div>*@
+        <div class="butReg">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="(x => AddToDb())">Sign Up</MudButton>
+            @*<button @onclick="(x => AddToDb())">Sign Up</button>*@
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private User user = new User();
+    private string Message;
+    bool isShow;
+    public IMask emailMask = RegexMask.Email();
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType PasswordInput = InputType.Password;
+    private string Login = string.Empty;
+    private string FullName = string.Empty;
+    private string Role = string.Empty;
+    private string Department = string.Empty;
+    private string Email = string.Empty;
+    private string Phone = string.Empty;
+    private string Password = string.Empty;
+    private string ConfirmPassword = string.Empty;
+    private void AddToDb()
+    {
+        if (Login == string.Empty || FullName == string.Empty || Email == string.Empty || Phone == string.Empty || Password == string.Empty || ConfirmPassword == string.Empty)
+        {
+            Message = "Заполните все поля!";
+        }
+
+        else
+        {
+            if (Password == ConfirmPassword)
+            {
+                switch(Role)
+                {
+                    case "Заказчик":
+                        user.Role = "Заказчик";
+                        break;
+                    case "Застройщик":
+                        user.Role = "Застройщик";
+                        break;
+                    case "Проектировщик":
+                        user.Role = "Проектировщик";
+                        break;
+                }
+                switch(Department)
+                {
+                    case "Газо-Снабжение":
+                        user.Department = "Газо-Снабжение";
+                        break;
+                    case "Водо-Снабжение":
+                        user.Department = "Водо-Снабжение";
+                        break;
+                }
+                user.Login = Login;
+                user.FullName = FullName;
+                user.Email = Email;
+                user.Phone = Phone;
+                user.Password = Password;
+                Message = string.Empty;
+                service.Save(user);
+                nav.NavigateTo("/");
+            }
+
+            else
+            {
+                Message = "Пароли не совместимы!";
+            }
+        }  
+    }
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

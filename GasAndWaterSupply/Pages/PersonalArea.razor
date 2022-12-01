@@ -1,0 +1,335 @@
+﻿@page "/PerAr"
+@inject GasAndWaterSupply.Data.UserService service
+@inject GasAndWaterSupply.Data.FileSystemService File
+@inject NavigationManager nav
+@using GasAndWaterSupply.Data
+@using MongoDB.Driver;
+@inject IWebHostEnvironment Environment
+<h3>PersonalArea : @service.Login</h3>
+
+<div class="Per">
+    <div>
+        <div class="info">
+            <label>Login:</label>
+            <MudTextField @bind-Value="@service.Login" Variant="@Variant.Text" Clearable></MudTextField>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>FullName:</label>
+            <MudTextField @bind-Value="@service.FullName" Variant="@Variant.Text" Clearable></MudTextField>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>Role:</label>
+            <MudTextField @bind-Value="@service.Role" Variant="@Variant.Text" Clearable></MudTextField>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>Department:</label>
+            <MudTextField @bind-Value="@service.Department" Variant="@Variant.Text" Clearable></MudTextField>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>Email:</label>
+            <MudTextField Mask="@emailMask" HelperText="@emailMask.Mask"
+                          @bind-Value="@service.Email" Variant="@Variant.Text" Clearable />
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>Phone:</label>
+            <MudTextField Mask="@(new PatternMask("00000000000"))"
+                                  @bind-Value="@service.Phone" Variant="@Variant.Text" Clearable />
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="info">
+            <label>Password:</label>
+            <MudTextField @bind-Value="@service.Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" />
+        </div>
+    </div>
+    <br />
+    @if (service.Role == "Застройщик")
+    {
+        Developer = false;
+    }
+
+    @if (service.Role == "Проектировщик")
+    {
+        Designer = false;
+    }
+
+    @if (service.Role == "Заказчик")
+    {
+        Customer = false;
+    }
+
+    <EditForm Model="user" hidden="@Customer">
+        <div class="butCreate">
+            <button class="btn btn-primary" @onclick="(x => Create())">Create Project</button>
+        </div>
+    </EditForm>
+    <EditForm Model="user" hidden="@Developer">
+        <div>
+            <div class="info">
+                <label>Застройщик:</label>
+                <MudTextField @bind-Value="@service.Developer" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>ОГРН:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000000"))" @bind-Value="@service.OGRN" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>ИНН:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000"))" @bind-Value="@service.INN" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>КПП:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000"))" @bind-Value="@service.KPP" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>Адрес:</label>
+                <MudTextField @bind-Value="@service.Address" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>Руководитель исполнительного комитета РФ:</label>
+                <MudTextField @bind-Value="@service.Supervisor" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br \>
+        <label for="inputfile">Добавить документы</label>
+        <div class="InputFile">
+            <InputFile OnChange="@LoadFiles" multiple />
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Имя файла</th>
+                        <th>Тип файла</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in loadedFiles)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.ContentType</td>
+                            <td><button @onclick="()=>Remove(item)">Удалить</button></td>
+                            <td><button @onclick="()=>DataAdd(item)">Добавить</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+    </EditForm>
+    
+    <EditForm Model="user" hidden="@Designer">
+        <div>
+            <div class="info">
+                <label>Проектная организация:</label>
+                <MudTextField @bind-Value="@service.Organization" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>ОГРН:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000000"))" @bind-Value="@service.OGRN" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>ИНН:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000"))" @bind-Value="@service.INN" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <div>
+            <div class="info">
+                <label>КПП:</label>
+                <MudTextField Mask="@(new PatternMask("0000000000"))" @bind-Value="@service.KPP" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>Адрес:</label>
+                <MudTextField @bind-Value="@service.Address" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>Директор:</label>
+                <MudTextField @bind-Value="@service.Director" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="info">
+                <label>Главный инженер проекта:</label>
+                <MudTextField @bind-Value="@service.ChiefEngineer" Variant="@Variant.Text" Clearable></MudTextField>
+            </div>
+        </div>
+        <br \>
+        <label for="inputfile">Добавить документы</label>
+        <div class="InputFile">
+            <InputFile OnChange="@LoadFiles" multiple />
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Имя файла</th>
+                        <th>Тип файла</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in loadedFiles)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.ContentType</td>
+                            <td><button @onclick="()=>Remove(item)">Удалить</button></td>
+                            <td><button @onclick="()=>DataAdd(item)">Добавить</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </EditForm>
+    <div class="btnDanger">
+        <button class="btn btn-danger" @onclick="(x => Update())">Update</button>
+        <button class="btn btn-danger" @onclick="(x => Exit())">Exit</button>
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+    private bool Developer = true;
+    private bool Designer = true;
+    private bool Customer = true;
+    private string Login;
+    private string FullName;
+    private string Email;
+    private string Phone;
+    private string Password;
+    private User user = new User();
+    private Document doc = new Document();
+    private List<IBrowserFile> loadedFiles = new();
+    private string path = string.Empty;
+    public IMask emailMask = RegexMask.Email();
+    InputType PasswordInput = InputType.Password;
+
+    private void Update()
+    {
+        var client = new MongoClient();
+        var database = client.GetDatabase("UsersDB");
+        var collection = database.GetCollection<User>("Users");
+        if (service.Role == "Заказчик")
+        {
+            var newUser = Builders<User>.Update.Set("Login", service.Login).
+                                                Set("FullName", service.FullName).
+                                                Set("Email", service.Email).
+                                                Set("Phone", service.Phone).
+                                                Set("Password", service.Password);
+            collection.UpdateOne(x => x.Login == service.Login, newUser);
+        }
+        if (service.Role == "Застройщик")
+        {
+            var newUser = Builders<User>.Update.Set("Login", service.Login).
+                                                Set("FullName", service.FullName).
+                                                Set("Email", service.Email).
+                                                Set("Phone", service.Phone).
+                                                Set("Password", service.Password).
+                                                Set("Developer", service.Developer).
+                                                Set("OGRN", service.OGRN).
+                                                Set("INN", service.INN).
+                                                Set("KPP", service.KPP).
+                                                Set("Address", service.Address).
+                                                Set("Supervisor", service.Supervisor);
+            collection.UpdateOne(x => x.Login == service.Login, newUser);
+        }
+        if (service.Role == "Проектировщик")
+        {
+            var newUser = Builders<User>.Update.Set("Login", service.Login).
+                                                Set("FullName", service.FullName).
+                                                Set("Email", service.Email).
+                                                Set("Phone", service.Phone).
+                                                Set("Password", service.Password).
+                                                Set("Organization", service.Organization).
+                                                Set("OGRN", service.OGRN).
+                                                Set("INN", service.INN).
+                                                Set("KPP", service.KPP).
+                                                Set("Address", service.Address).
+                                                Set("Director", service.Director).
+                                                Set("ChiefEngineer", service.ChiefEngineer);
+            collection.UpdateOne(x => x.Login == service.Login, newUser);
+        }
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var items in e.GetMultipleFiles(e.FileCount))
+        {
+            loadedFiles.Add(items);
+            path = Path.Combine(Environment.ContentRootPath, "wwwroot", "files", items.Name);
+            await using FileStream fs = new(path, FileMode.Create);
+            await items.OpenReadStream(10000000000000).CopyToAsync(fs);            
+        }
+    }
+
+    private void Remove(IBrowserFile file)
+    {
+        loadedFiles.Remove(file);
+    }
+
+    private void DataAdd(IBrowserFile file)
+    {
+        File.UploadToDb(file, path);
+        doc.Name = file.Name;
+        doc.Employee = service.Login;
+        doc.Department = service.Department;
+        File.UploadDocument(doc);
+        loadedFiles.Remove(file);
+    }
+
+    private void Exit()
+    {
+        nav.NavigateTo("/");
+    }
+
+    private void Create()
+    {
+        nav.NavigateTo("/create");
+    }
+}

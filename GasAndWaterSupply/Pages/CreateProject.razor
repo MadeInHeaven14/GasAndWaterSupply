@@ -1,0 +1,129 @@
+﻿@page "/create"
+@using GasAndWaterSupply.Data;
+@using MongoDB.Driver;
+@inject NavigationManager nav
+@inject GasAndWaterSupply.Data.UserService service
+@inject GasAndWaterSupply.Data.FileSystemService File
+<h3>CreateProject</h3>
+<div class="asd">
+    <div class="row">
+        <label>Name</label>
+        <MudTextField class="create" T="string" />
+        <label>Developer</label>
+        <MudSelect class="create" @bind-Value="Developer" T="string" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in UserList)
+            {
+                if (item.Role == "Застройщик" && item.Department == service.Department)
+                {
+                    <MudSelectItem Value="@(item.Login)" />
+                }
+            }
+        </MudSelect>
+        <label>Designer</label>
+        <MudSelect class="create" @bind-Value="Designer" T="string" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in UserList)
+            {
+                if (item.Role == "Проектировщик" && item.Department == service.Department)
+                {
+                    <MudSelectItem Value="@(item.Login)" />
+                }
+            }
+        </MudSelect>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя файла</th>
+                    <th>Утверждён?</th>
+                    <th>Обязателен?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DocumentList)
+                {
+                    if (item.Employee == Developer)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td><input type="checkbox" /></td>
+                            <td><input type="checkbox" /></td>
+                            <td><button @onclick="()=>Add(item)">Добавить</button></td>
+                            <td><button @onclick="()=>File.DownloadToLocal(item.Name)">Скачать</button></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя файла</th>
+                    <th>Утверждён?</th>
+                    <th>Обязателен?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DocumentList)
+                {
+                    if (item.Employee == Designer)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td><input type="checkbox" /></td>
+                            <td><input type="checkbox" /></td>
+                            <td><button @onclick="()=>Add(item)">Добавить</button></td>
+                            <td><button @onclick="()=>File.DownloadToLocal(item.Name)">Скачать</button></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <button class="btn btn-primary" @onclick="(x => Create())">Create Project</button>
+    </div>
+</div>
+
+
+@code {
+    private List<User> UserList = new List<User>();
+    private List<Document> DocumentList = new List<Document>();
+    private List<Document> DocForProject = new List<Document>();
+    private Project project = new Project();
+    private string Developer;
+    private string Designer;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var client = new MongoClient();
+        var database = client.GetDatabase("UsersDB");
+        var collection = database.GetCollection<User>("Users");
+        UserList = collection.Find(x => true).ToList();
+        var collection1 = database.GetCollection<Document>("Documents");
+        DocumentList = collection1.Find(x => true).ToList();
+    }
+
+    private void Add(Document item)
+    {
+        var client = new MongoClient();
+        var database = client.GetDatabase("UsersDB");
+        var collection = database.GetCollection<Document>("Documents");
+        var doc = collection.Find(x => x.Name == item.Name).FirstOrDefault();
+        DocForProject.Add(doc);
+    }
+
+    private void Create()
+    {
+        var client = new MongoClient();
+        var database = client.GetDatabase("UsersDB");
+        var collection = database.GetCollection<Project>("Projects");
+        project.Department = service.Department;
+        project.Customer = service.Login;
+        project.Developer = Developer;
+        project.Designer = Designer;
+        project.Documents = DocForProject;
+        collection.InsertOne(project);
+        nav.NavigateTo("/PerAr");
+    }
+
+    
+}
