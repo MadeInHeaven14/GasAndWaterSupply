@@ -1,0 +1,36 @@
+﻿@page "/Chat"
+@using Microsoft.AspNetCore.SignalR.Client;
+@using GasAndWaterSupply.Data;
+@inject GasAndWaterSupply.Data.UserService service
+<h3>chat</h3>
+<input border="1" placeholder="Напишите сообщение" @bind-value="message"/>
+<button @onclick="(x => Send())">Отправить</button>
+<ul>
+    @foreach (var item in messages)
+    {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+        private HubConnection hubConnection;
+        private string message;
+        private string userName;
+        private List<string> messages = new List<string>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            userName = service.Login;
+            hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7077/chat").WithAutomaticReconnect().Build();
+            hubConnection.On<string, string>("Receive", (userName, message) =>
+            {
+                messages.Add($"{userName}: {message}");
+                InvokeAsync(() => StateHasChanged());
+            });
+            await hubConnection.StartAsync();
+        }
+
+        async Task Send() => await hubConnection.SendAsync("Send", userName, message);
+
+        
+}

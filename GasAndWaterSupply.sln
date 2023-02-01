@@ -5,6 +5,10 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GasAndWaterSupply", "GasAndWaterSupply\GasAndWaterSupply.csproj", "{3ECDDD5F-53E5-4DBB-8E1A-2B253D859C16}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GazAndWaterSupply-WPF", "..\GazAndWaterSupply-WPF\GazAndWaterSupply-WPF\GazAndWaterSupply-WPF.csproj", "{EFF8A45D-16A6-42CE-9B76-562946B7A503}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GasAndWaterSupply-Server", "..\GasAndWaterSupply-Server\GasAndWaterSupply-Server\GasAndWaterSupply-Server.csproj", "{E3C4C8BA-29F6-4FF5-8B08-2481ED493552}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{3ECDDD5F-53E5-4DBB-8E1A-2B253D859C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECDDD5F-53E5-4DBB-8E1A-2B253D859C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ECDDD5F-53E5-4DBB-8E1A-2B253D859C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFF8A45D-16A6-42CE-9B76-562946B7A503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFF8A45D-16A6-42CE-9B76-562946B7A503}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFF8A45D-16A6-42CE-9B76-562946B7A503}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFF8A45D-16A6-42CE-9B76-562946B7A503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C4C8BA-29F6-4FF5-8B08-2481ED493552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C4C8BA-29F6-4FF5-8B08-2481ED493552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C4C8BA-29F6-4FF5-8B08-2481ED493552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C4C8BA-29F6-4FF5-8B08-2481ED493552}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

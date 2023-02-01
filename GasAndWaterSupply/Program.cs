@@ -1,6 +1,8 @@
 using GasAndWaterSupply.Data;
+using GasAndWaterSupply.hubs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.ResponseCompression;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +14,13 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<FileSystemService>();
 builder.Services.AddMudServices();
+builder.Services.AddResponseCompression(options => options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -31,5 +38,11 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapHub<ChatHub>("/chat");
 
 app.Run();

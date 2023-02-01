@@ -226,6 +226,7 @@
     <div class="btnDanger">
         <button class="btn btn-danger" @onclick="(x => Update())">Update</button>
         <button class="btn btn-danger" @onclick="(x => Exit())">Exit</button>
+        <button class="btn btn-danger" @onclick="(x => ToChat())">Chat</button>
     </div>
 </div>
 
@@ -331,5 +332,10 @@
     private void Create()
     {
         nav.NavigateTo("/create");
+    }
+
+    private void ToChat()
+    {
+        nav.NavigateTo("/Chat");
     }
 }

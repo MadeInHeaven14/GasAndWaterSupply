@@ -71,7 +71,7 @@
             @*<input type="tel" @bind-value="Phone"/>*@
         </div>
         <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
-        <MudTextField @bind-Value="ConfirmPassword" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" />
+        <MudTextField @bind-Value="ConfirmPassword" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordConfirm" Adornment="Adornment.End" />
         @*<div>
             <div class="colo-md-4">
                 <label>Password :</label>
@@ -101,6 +101,7 @@
     public IMask emailMask = RegexMask.Email();
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     InputType PasswordInput = InputType.Password;
+    InputType PasswordConfirm = InputType.Password;
     private string Login = string.Empty;
     private string FullName = string.Empty;
     private string Role = string.Empty;
