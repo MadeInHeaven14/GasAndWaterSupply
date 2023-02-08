@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client;
 @using GasAndWaterSupply.Data;
 @inject GasAndWaterSupply.Data.UserService service
+@inject NavigationManager nav
 <h3>chat</h3>
 <input border="1" placeholder="Напишите сообщение" @bind-value="message"/>
 <button @onclick="(x => Send())">Отправить</button>
@@ -11,26 +12,43 @@
         <li>@item</li>
     }
 </ul>
+<div class="btnDanger">
+    <button class="btn btn-danger" @onclick="(x => Exit())">ToPersonalArea</button>
+</div>
 
 @code {
-        private HubConnection hubConnection;
-        private string message;
-        private string userName;
-        private List<string> messages = new List<string>();
+    private HubConnection hubConnection;
+    private string message;
+    private string senderName;
+    private string receiverName;
+    private List<string> messages = new List<string>();
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        senderName = service.Login;
+        hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7077/chat").WithAutomaticReconnect().Build();
+        messages.Add($"Вы вошли в чат");
+        hubConnection.On<string, string, string>("Receive", (senderName, receiverName, message) =>
         {
-            userName = service.Login;
-            hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7077/chat").WithAutomaticReconnect().Build();
-            hubConnection.On<string, string>("Receive", (userName, message) =>
+            if (service.Login == receiverName || receiverName == string.Empty)
             {
-                messages.Add($"{userName}: {message}");
-                InvokeAsync(() => StateHasChanged());
-            });
-            await hubConnection.StartAsync();
-        }
+                if (message != string.Empty && message != null)
+                {
+                    messages.Add($"{senderName}: {message}");
+                }
+            }
+            InvokeAsync(() => StateHasChanged());
+        });
+        await hubConnection.StartAsync();
+    }
 
-        async Task Send() => await hubConnection.SendAsync("Send", userName, message);
+    async Task Send() => await hubConnection.SendAsync("Send", senderName, "", message);
+
+    private async void Exit()
+    {
+        nav.NavigateTo("/PerAr");
+        await hubConnection.InvokeAsync("Send", "", "", $"Пользователь {senderName} выходит из чата");
+    }
 
         
 }

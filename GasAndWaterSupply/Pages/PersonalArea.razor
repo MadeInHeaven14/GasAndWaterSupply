@@ -72,6 +72,7 @@
     @if (service.Role == "Заказчик")
     {
         Customer = false;
+        Chat = true;
     }
 
     <EditForm Model="user" hidden="@Customer">
@@ -226,7 +227,7 @@
     <div class="btnDanger">
         <button class="btn btn-danger" @onclick="(x => Update())">Update</button>
         <button class="btn btn-danger" @onclick="(x => Exit())">Exit</button>
-        <button class="btn btn-danger" @onclick="(x => ToChat())">Chat</button>
+        <button class="btn btn-danger" @onclick="(x => ToChat())" hidden="@Chat">Chat</button>
     </div>
 </div>
 
@@ -244,6 +245,7 @@
     private string Email;
     private string Phone;
     private string Password;
+    private bool Chat;
     private User user = new User();
     private Document doc = new Document();
     private List<IBrowserFile> loadedFiles = new();
